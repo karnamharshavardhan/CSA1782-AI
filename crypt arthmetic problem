@@ -1,0 +1,45 @@
+def is_solution_valid(letters, expression):
+    expression_with_values = expression.translate(str.maketrans(letters))
+    
+    try:
+        return eval(expression_with_values) == 0
+    except:
+        return False
+
+def solve_cryptarithmetic(letters, unique_letters, expression):
+    if len(letters) == len(unique_letters):
+        if is_solution_valid(letters, expression):
+            return letters.copy()
+        return None
+    
+    for digit in range(10):
+        letter = unique_letters[len(letters)]
+        if digit not in letters.values():
+            letters[letter] = digit
+            result = solve_cryptarithmetic(letters, unique_letters, expression)
+            if result:
+                return result
+            letters.pop(letter)
+    
+    return None
+
+def cryptarithmetic_solver(expression):
+    words = expression.replace('+', ' ').replace('-', ' ').split()
+    unique_letters = set(''.join(words))
+    
+    if len(unique_letters) > 10:
+        return None
+    
+    letters = {}
+    return solve_cryptarithmetic(letters, unique_letters, expression)
+
+expression = "SEND + MORE = MONEY"
+solution = cryptarithmetic_solver(expression)
+
+if solution:
+    print("Solution found:")
+    for letter, digit in solution.items():
+        print(f"{letter}: {digit}")
+    print(expression.translate(str.maketrans(solution)))
+else:
+    print("No solution found.")
